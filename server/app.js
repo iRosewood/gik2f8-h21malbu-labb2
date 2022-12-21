@@ -1,5 +1,3 @@
-const { error } = require('console');
-const { json } = require('express');
 const express = require('express');
 const app = express();
 const fs = require('fs/promises');
@@ -22,7 +20,7 @@ app.get('/tasks', async (req, res) => {
     }
     catch(error)
     {
-        res.status(500).send({error: error.stack});
+        res.status(500).send({ error });
     }
 
 });
@@ -52,34 +50,8 @@ app.post("/tasks", async(req,res) =>{
     }
 });
 
-app.patch("/tasks/:id", async(req, res) =>{
-    
-    const id = req.params.id;
-    try{
-        const listBuffer = await fs.readFile("./tasks.json");
-        const currentTasks = JSON.parse(listBuffer);
-
-        currentTasks.forEach(task => {
-            if(task.id == id && task.completed == false){
-                task.completed = true;
-            } 
-            else if(task.id == id && task.completed == true){
-                task.completed = false;
-            }
-        });
-        
-        await fs.writeFile('./tasks.json',JSON.stringify(currentTasks));
-    }
-    catch(error) {
-        res.status(500).send({error: error.stack});
-    }
-
-    res.send({messege:`Uppgiften med id: ${id} uppdaterades`});
-
-});
 
 app.delete("/tasks/:id", async(req, res) =>{
-    /*localhost:5000/task/id*/
     const id = req.params.id;
     try {
         const listBuffer = await fs.readFile("./tasks.json");
@@ -95,6 +67,30 @@ app.delete("/tasks/:id", async(req, res) =>{
     catch (error) {
         res.status(500).send({error: error.stack});
     }
+});
+
+app.put("/tasks/:id", async(req, res) =>{
+    
+    const id = req.params.id;
+    try{
+        const tasks = JSON.parse(await fs.readFile("./tasks.json"));
+
+        tasks.forEach(task => {
+            if(task.id == id) {
+                task.completed = !task.completed;
+            }
+            
+        });
+
+        
+        await fs.writeFile('./tasks.json',JSON.stringify(tasks));
+    }
+    catch(error) {
+        res.status(500).send({error: error.stack});
+    }
+
+    res.send({messege:`Uppgiften med id: ${id} uppdaterades`});
+
 });
 
 app.listen(PORT, () => console.log('Server running on http://localhost:5000'));

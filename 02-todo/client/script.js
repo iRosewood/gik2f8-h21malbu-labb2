@@ -111,24 +111,14 @@ function renderList(){
 
 function renderTask({id, title, description, dueDate, completed}){
     const now = new Date();
-    let test = now.getFullYear() - new Date(dueDate).getFullYear();
-    if (test >=0)
-    {
-        test = now.getMonth()- new Date(dueDate).getMonth(); 
 
-        if(test >=0)
-        {
-            test = now.getDate() - new Date(dueDate).getDate()
-            console.log(test)
-        }
-    } 
     let html =`
     <li  class="select-none mt-2 py-2 border-b bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg `;
-    if (completed != true && test > 0)
+    if (!completed)
     {
         html+= `bg-gradient-to-br from-amber-500 to-amber-600 `  
     }
-    else if (completed)
+    else
     {
         html += `bg-gradient-to-br from-teal-700 to-teal-800 `;
     }
